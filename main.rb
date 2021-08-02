@@ -1,3 +1,9 @@
+require_relative 'game.rb'
+require_relative 'codemaker.rb'
+require_relative 'codebreaker.rb'
+require_relative 'utils.rb'
+
+
 # until player quits
 #   show instructions
 #   ask if player will be maker, breaker, or neither, or quit
@@ -9,3 +15,9 @@
 #   end
 #   show winner
 # end
+
+maker = Codemaker.new
+breaker = Codebreaker.new(true)
+
+game = Game.new(maker, breaker)
+game.play
