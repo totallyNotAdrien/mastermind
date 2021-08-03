@@ -14,20 +14,26 @@ class Game
     @code = @codemaker.create_code
     loop do
       breaker_guess
-      if @curr_guess == "cheat" 
+      if @curr_guess == "cheat"
         puts "These digits: " + @code.join("")
       elsif @curr_guess == "q"
         puts "Thank you so much for playing my game!"
         @curr_feedback = ""
         break
       else
-        puts "Incorrect" unless feedback == "cccc"
+        feedback
+        unless @curr_feedback == Codemaker::CORRECT * 4
+          puts "\n\n#{@curr_guess}: #{@curr_feedback}\n\n"
+        end
       end
 
-      @guess_history << {guess:@curr_guess, feedback: @curr_feedback} 
-      break if @curr_feedback == "cccc"
+      @guess_history << { guess: @curr_guess, feedback: @curr_feedback }
+      break if @curr_feedback == Codemaker::CORRECT * 4
     end
-    puts "Conglaturation !!!\nYou have cracked a great code."
+    
+    unless @curr_feedback.empty?
+      puts "Conglaturation !!!\nYou have cracked a great code."
+    end
   end
 
   def breaker_guess
@@ -39,5 +45,6 @@ class Game
   end
 
   private
+
   attr_reader :codemaker
 end

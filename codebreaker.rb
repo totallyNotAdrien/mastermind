@@ -18,7 +18,7 @@ class Codebreaker
   private
 
   def human_guess()
-    puts "Enter four digits (1-6) to guess or 'q' to quit"
+    print "Enter four digits (1-6) to guess or 'q' to quit: "
     guess = gets.chomp.strip
     until (guess.length == 4 && all_digits?(guess) &&
            all_chars_between?(guess, '1','6')) || guess == "q" ||
