@@ -1,4 +1,7 @@
 module Utils
+  CORRECT = "c"
+  INCORRECT_PLACEMENT = "i"
+
   def digit?(char)
     char.is_a?(String) && char.length == 1 && char >= "0" && char <= "9"
   end

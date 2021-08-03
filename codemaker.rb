@@ -13,6 +13,14 @@ class Codemaker
     end
   end
 
+  def feedback(guess, code)
+    if guess == code.join("")
+      "cccc"
+    else
+      "milk"
+    end
+  end
+
   private
 
   def human_code
