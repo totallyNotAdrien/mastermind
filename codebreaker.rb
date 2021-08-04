@@ -9,16 +9,16 @@ class Codebreaker
     @human = human
   end
 
-  def guess()
+  def guess(attempt)
     if human
-      human_guess
+      human_guess(attempt)
     end
   end
 
   private
 
-  def human_guess()
-    print "Enter four digits (1-6) to guess or 'q' to quit: "
+  def human_guess(attempt)
+    print "Attempt ##{attempt}: Enter four digits (1-6) to guess or 'q' to quit: "
     guess = gets.chomp.strip
     until (guess.length == 4 && all_digits?(guess) &&
            all_chars_between?(guess, '1','6')) || guess == "q" ||

@@ -17,11 +17,11 @@ class Codemaker
   end
 
   def feedback(guess, code)
-    if guess == code.join("")
+    if guess == code
       CORRECT * 4
     else
-      code_tally = tally_array_occurrences(code)
-      guess_tally = tally_array_occurrences(guess.chars)
+      code_tally = tally_occurrences(code)
+      guess_tally = tally_occurrences(guess)
       # puts "Code Tally: #{code_tally}"
       # puts "Guess Tally: #{guess_tally}"
 
@@ -58,7 +58,8 @@ class Codemaker
 
   private
 
-  def tally_array_occurrences(arr)
+  def tally_occurrences(str)
+    arr = str.chars
     tally = Hash.new(0)
     arr.each {|item| tally[item] += 1}
     tally
@@ -70,6 +71,6 @@ class Codemaker
   def computer_code
     code = []
     4.times { code << rand(1..6).to_s }
-    code
+    code.join("")
   end
 end
