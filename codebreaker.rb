@@ -15,7 +15,10 @@ class Codebreaker
     if human
       human_guess(attempt)
     else
-      computer_guess(attempt, guess_history)
+      guess = computer_guess(attempt, guess_history)
+      print "Attempt ##{attempt}: #{guess}"
+      puts
+      guess
     end
   end
 
@@ -37,22 +40,34 @@ class Codebreaker
   #"history" entry format: 
   #{ guess: @curr_guess, feedback: @curr_feedback }
   def computer_guess(attempt, history)
+    prev_guess = (attempt - 2 >= 0) ? history[attempt - 2] : nil
     if attempt == 1
       @guess_index = rand(@potential_codes.length)
       @potential_codes[@guess_index]
-    elsif attempt == 2
-      p history[attempt-2]
-      if history[attempt - 2][:feedback].empty?
+    elsif prev_guess
+      p prev_guess
+      if prev_guess[:feedback].empty?
         @potential_codes.reject! do |code| 
-          code.chars.any? do |digit| 
-            history[attempt-2][:guess].include?(digit)
+          has_any_digits = code.chars.any? do |digit| 
+            prev_guess[:guess].include?(digit)
           end
+          is_same = code == prev_guess[:guess]
+          has_any_digits && !is_same
         end
+        @guess_index = @potential_codes.find_index(prev_guess[:guess])
+        @potential_codes.delete_at(@guess_index)
         puts "Codes: #{@potential_codes.length}"
+        @guess_index = 0 if @guess_index > @potential_codes.length
+        return @potential_codes[@guess_index]
       else 
-        puts "Borf"
+        #prev_prev_guess needed?
+        #something about prev guess and prev prev guess correct and incorrect counts
+        #and comparing them
+        #more correct in recent means filtering can be done based on digits that changed
+        @guess_index += 1
+        return @potential_codes[@guess_index]
       end
-      binding.pry
+      #binding.pry
     else
 
     end
@@ -60,7 +75,9 @@ class Codebreaker
 
   def all_codes
     codes = (1111..6666).to_a
-    filtered = codes.select{|num| num.to_s.chars.all?{|digit| digit.between?("1","6")}}
+    filtered = codes.select do |num| 
+      num.to_s.chars.all?{|digit| digit.between?("1","6")}
+    end
     filtered.map{|num| num.to_s}
   end
 end

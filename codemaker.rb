@@ -59,6 +59,7 @@ class Codemaker
   private
 
   def tally_occurrences(str)
+   #binding.pry
     arr = str.chars
     tally = Hash.new(0)
     arr.each {|item| tally[item] += 1}

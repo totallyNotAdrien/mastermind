@@ -36,12 +36,14 @@ class Game
         break if @curr_feedback == Codemaker::CORRECT * 4 ||
                  @attempt > 12
       end
-
+      
+      codebreaker_str = (@codebreaker.human ? "You" : "Computer")
       if @curr_feedback == Codemaker::CORRECT * 4
         puts history_string
         puts "Conglaturation !!!\nYou have cracked a great code."
       elsif @attempt > 12
-        puts "You failed to crack the code."
+        puts history_string
+        puts codebreaker_str + " failed to crack the code."
       end
     end
   end
