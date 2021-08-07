@@ -16,8 +16,4 @@ require_relative 'utils.rb'
 #   show winner
 # end
 
-maker = Codemaker.new
-breaker = Codebreaker.new(true)
-
-game = Game.new(maker, breaker)
-game.play
+game = Game.new.play
