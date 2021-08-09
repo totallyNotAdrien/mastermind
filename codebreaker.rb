@@ -15,6 +15,7 @@ class Codebreaker
   def initialize(human = false)
     @human = human
     @potential_codes = all_codes
+    @oi_count = 0
   end
 
   def guess(attempt, guess_history)
@@ -64,6 +65,20 @@ class Codebreaker
       diff_chars = string_differences(pen_guess_str, prev_guess_str)
       diff_counts = char_counts(diff_chars)
 
+      if prev_feed == pen_feed
+        diff_indices = string_diff_indices(pen_guess_str, prev_guess_str)
+        if diff_indices.length == 1
+          index = diff_indices[0]
+          @potential_codes.reject! do |code|
+            pat = "*" * 4
+            pat[index] = prev_guess_str[index]
+            is_diff = code != prev_guess_str
+            !same_length_match?(prev_guess_str, pat) && is_diff
+            #probably scrap this all-----------------------------------------
+          end
+        end
+      end
+
       #if has incorrect and no correct
       #remove all guesses with new digits in those positions except exact match
       if prev_feed_counts[CORRECT] == 0
@@ -80,9 +95,19 @@ class Codebreaker
             has_any_digits_in_place
           end
         end
+        #has correct and no incorrect
       elsif prev_feed_counts[INCORRECT_PLACEMENT] == 0
         if prev_feed_counts[CORRECT] > 0
-
+          #binding.pry
+          patterns = patterns_to_match(
+            prev_guess_str, 
+            prev_feed_counts[CORRECT],
+            prev_feed_counts[INCORRECT_PLACEMENT])
+          @potential_codes.reject! do |code|
+            same_length_match_no_pattern?(prev_guess_str, patterns)
+          end
+          puts "OI! #{@oi_count}"
+          @oi_count += 1
         end
       end
       return next_potential_code(prev_guess)
@@ -143,7 +168,14 @@ class Codebreaker
     diff
   end
 
-  def same_length_match?(str_to_match, pattern, wildcard)
+  def string_diff_indices(str1, str2)
+    diff = string_differences(str1, str2)
+    indices = []
+    diff.each_index{|i| indices << i if diff[i] == DIFF_CHAR}
+    indices
+  end
+
+  def same_length_match?(str_to_match, pattern, wildcard = "*")
     return false if str_to_match.length != pattern.length
     str = str_to_match.chars
     pat = pattern.chars
@@ -153,7 +185,46 @@ class Codebreaker
     return true
   end
 
-  def patterns_to_match(guess_str, num_correct, num_incorrect)
-    
+  def same_length_match_any_pattern?(str_to_match, patterns, wildcard = "*")
+    patterns.any?{|pat| same_length_match?(str_to_match, pat)}
+  end
+
+  def same_length_match_no_pattern?(str_to_match, patterns, wildcard = "*")
+    !same_length_match_any_pattern?(str_to_match,patterns, wildcard)
+  end
+
+  def patterns_to_match(guess_str, num_correct, num_incorrect, wildcard = "*")
+    #only correct
+
+    patterns = []
+    if num_incorrect == 0
+      if num_correct == 1
+        #one correct
+        4.times do |i|
+          pat = wildcard * 4
+          pat[i] = guess_str[i]
+          patterns << pat
+        end
+      elsif num_correct == 2
+        #two correct
+        for i in 0...(guess_str.length - 1)
+          for j in (i + 1)...guess_str.length
+            pat = wildcard * 4
+            pat[i] = guess_str[i]
+            pat[j] = guess_str[j]
+            patterns << pat
+          end
+        end
+      elsif num_correct == 3
+        4.times do |i|
+          pat = guess_str.clone
+          pat[i] = wildcard
+          patterns << pat
+        end
+      end
+    elsif num_correct == 4
+      patterns << guess_str
+    end
+    patterns
   end
 end
