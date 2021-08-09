@@ -13,4 +13,10 @@ module Utils
       char.between?(char_a, char_b) || char.between?(char_a, char_b)
     end
   end
+
+  def char_counts(str)
+    counts = Hash.new(0)
+    str.chars.each{|char| counts[char] += 1}
+    counts
+  end
 end
