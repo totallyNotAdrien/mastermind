@@ -7,6 +7,9 @@ class Codebreaker
   CORRECT = "C"
   INCORRECT_PLACEMENT = "I"
 
+  SAME_CHAR = "S"
+  DIFF_CHAR = "D"
+
   include Utils
 
   def initialize(human = false)
@@ -50,11 +53,39 @@ class Codebreaker
     if prev_guess && penultimate_guess
       puts penultimate_guess
       puts prev_guess
-      #something about prev guess and penultimate_guess correct and incorrect counts
-      #and comparing them
-      #more correct in recent means filtering can be done based on digits that changed
-      @guess_index = (@guess_index + 1) % @potential_codes.length
-      return @potential_codes[@guess_index]
+      pen_guess_str = penultimate_guess[:guess]
+      prev_guess_str = prev_guess[:guess]
+      pen_feed = penultimate_guess[:feedback]
+      prev_feed = prev_guess[:feedback]
+      pen_counts = char_counts(pen_guess_str)
+      prev_counts = char_counts(prev_guess_str)
+      pen_feed_counts = char_counts(pen_feed)
+      prev_feed_counts = char_counts(prev_feed)
+      diff_chars = string_differences(pen_guess_str, prev_guess_str)
+      diff_counts = char_counts(diff_chars)
+
+      #if has incorrect and no correct
+      #remove all guesses with new digits in those positions except exact match
+      if prev_feed_counts[CORRECT] == 0
+        if prev_feed_counts[INCORRECT_PLACEMENT] > 0
+          #binding.pry
+          @potential_codes.reject! do |code|
+            has_any_digits_in_place = false
+            guess = prev_guess[:guess]
+            guess.chars.each_index do |i|
+              if guess[i] == code[i] && guess != code
+                has_any_digits_in_place = true
+              end
+            end
+            has_any_digits_in_place
+          end
+        end
+      elsif prev_feed_counts[INCORRECT_PLACEMENT] == 0
+        if prev_feed_counts[CORRECT] > 0
+
+        end
+      end
+      return next_potential_code(prev_guess)
     elsif prev_guess
       p prev_guess
       if prev_guess[:feedback].empty?
@@ -95,5 +126,34 @@ class Codebreaker
     puts "Codes: #{@potential_codes.length}"
     @guess_index = 0 if @guess_index >= @potential_codes.length
     @potential_codes[@guess_index]
+  end
+
+  def string_differences(str1, str2)
+    diff = ""
+    short = str1.length <= str2.length ? str1 : str2
+    long = short == str1 ? str2 : str1
+    long.chars.each_index do |i|
+      if i < short.length
+        comparison = long[i] == short[i] ? SAME_CHAR : DIFF_CHAR
+        diff << comparison
+      else
+        diff << DIFF_CHAR
+      end
+    end
+    diff
+  end
+
+  def same_length_match?(str_to_match, pattern, wildcard)
+    return false if str_to_match.length != pattern.length
+    str = str_to_match.chars
+    pat = pattern.chars
+    pat.each_index do |i|
+      return false if str[i] != pat[i] && pat[i] != wildcard
+    end
+    return true
+  end
+
+  def patterns_to_match(guess_str, num_correct, num_incorrect)
+    
   end
 end

@@ -19,4 +19,6 @@ module Utils
     str.chars.each{|char| counts[char] += 1}
     counts
   end
+
+  
 end
