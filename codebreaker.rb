@@ -52,70 +52,12 @@ class Codebreaker
       (history.length >= 2) ? history[history.length - 2] : nil
 
     if prev_guess && penultimate_guess
-      puts penultimate_guess
-      puts prev_guess
-      pen_guess_str = penultimate_guess[:guess]
-      prev_guess_str = prev_guess[:guess]
-      pen_feed = penultimate_guess[:feedback]
-      prev_feed = prev_guess[:feedback]
-      pen_counts = char_counts(pen_guess_str)
-      prev_counts = char_counts(prev_guess_str)
-      pen_feed_counts = char_counts(pen_feed)
-      prev_feed_counts = char_counts(prev_feed)
-      diff_chars = string_differences(pen_guess_str, prev_guess_str)
-      diff_counts = char_counts(diff_chars)
-
-      if prev_feed == pen_feed
-        diff_indices = string_diff_indices(pen_guess_str, prev_guess_str)
-        if diff_indices.length == 1
-          index = diff_indices[0]
-          @potential_codes.reject! do |code|
-            pat = "*" * 4
-            pat[index] = prev_guess_str[index]
-            is_diff = code != prev_guess_str
-            !same_length_match?(prev_guess_str, pat) && is_diff
-            #probably scrap this all-----------------------------------------
-          end
-        end
-      end
-
-      #if has incorrect and no correct
-      #remove all guesses with new digits in those positions except exact match
-      if prev_feed_counts[CORRECT] == 0
-        if prev_feed_counts[INCORRECT_PLACEMENT] > 0
-          #binding.pry
-          @potential_codes.reject! do |code|
-            has_any_digits_in_place = false
-            guess = prev_guess[:guess]
-            guess.chars.each_index do |i|
-              if guess[i] == code[i] && guess != code
-                has_any_digits_in_place = true
-              end
-            end
-            has_any_digits_in_place
-          end
-        end
-        #has correct and no incorrect
-      elsif prev_feed_counts[INCORRECT_PLACEMENT] == 0
-        if prev_feed_counts[CORRECT] > 0
-          #binding.pry
-          patterns = patterns_to_match(
-            prev_guess_str, 
-            prev_feed_counts[CORRECT],
-            prev_feed_counts[INCORRECT_PLACEMENT])
-          @potential_codes.reject! do |code|
-            same_length_match_no_pattern?(prev_guess_str, patterns)
-          end
-          puts "OI! #{@oi_count}"
-          @oi_count += 1
-        end
-      end
-      return next_potential_code(prev_guess)
+      return next_potential_code(prev_guess[:guess])
     elsif prev_guess
       p prev_guess
       if prev_guess[:feedback].empty?
         reject_all_digits_except_exact_match(prev_guess)
-        return next_potential_code(prev_guess)
+        return next_potential_code(prev_guess[:guess])
       else
         @guess_index = (@guess_index + 1) % @potential_codes.length
         return @potential_codes[@guess_index]
@@ -135,6 +77,41 @@ class Codebreaker
     filtered.map { |num| num.to_s }
   end
 
+  def remove_codes_with_digit_except_match(digit, guess_str)
+    @potential_codes.reject! do |code|
+      code.include?(digit) && code != guess_str
+    end
+  end
+
+  def remove_codes_with_digit(digit)
+    @potential_codes.reject! do |code|
+      code.include?(digit)
+    end
+  end
+
+  def remove_codes_with_any_digit_in_same_place(guess_str)
+    @potential_codes.reject! do |code|
+      remove = false
+      guess_str.chars.each_index do |index|
+        remove = true if code[index] == guess_str[index]
+      end
+      remove
+    end
+  end
+
+  def remove_codes_with_any_digit_in_same_place_except_match(guess_str)
+    @potential_codes.reject! do |code|
+      remove = false
+      guess_str.chars.each_index do |index|
+        remove = true if code[index] == guess_str[index] && code != guess_str
+      end
+      remove
+    end
+    adjust_guess_index(guess_str)
+  end
+
+  
+
   def reject_all_digits_except_exact_match(guess)
     @potential_codes.reject! do |code|
       has_any_digits = code.chars.any? do |digit|
@@ -145,12 +122,16 @@ class Codebreaker
     end
   end
 
-  def next_potential_code(prev_guess)
-    @guess_index = @potential_codes.find_index(prev_guess[:guess])
+  def next_potential_code(guess_str)
+    adjust_guess_index(guess_str)
+    @potential_codes[@guess_index]
+  end
+
+  def adjust_guess_index(guess_str)
+    @guess_index = @potential_codes.find_index(guess_str)
     @potential_codes.delete_at(@guess_index)
     puts "Codes: #{@potential_codes.length}"
     @guess_index = 0 if @guess_index >= @potential_codes.length
-    @potential_codes[@guess_index]
   end
 
   def string_differences(str1, str2)
@@ -171,7 +152,7 @@ class Codebreaker
   def string_diff_indices(str1, str2)
     diff = string_differences(str1, str2)
     indices = []
-    diff.each_index{|i| indices << i if diff[i] == DIFF_CHAR}
+    diff.chars.each_index{|i| indices << i if diff[i] == DIFF_CHAR}
     indices
   end
 
@@ -195,7 +176,6 @@ class Codebreaker
 
   def patterns_to_match(guess_str, num_correct, num_incorrect, wildcard = "*")
     #only correct
-
     patterns = []
     if num_incorrect == 0
       if num_correct == 1

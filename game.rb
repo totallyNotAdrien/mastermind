@@ -77,7 +77,7 @@ class Game
     case input
     when "1"
       @codemaker = Codemaker.new
-      @codebreaker = Codebreaker.new
+      @codebreaker = Codebreaker.new(true)
     when "2"
       @codemaker = Codemaker.new(true)
       @codebreaker = Codebreaker.new
