@@ -16,7 +16,7 @@ class Codemaker
     end
   end
 
-  def feedback(guess, code)
+  def self.feedback(guess, code)
     if guess == code
       CORRECT * 4
     else
@@ -39,9 +39,9 @@ class Codemaker
 
       num_correct = 0
       guess.chars.each_index {|i| num_correct += 1 if guess[i] == code[i]}
-      remaining_potentially_correct = num_potentially_correct - num_correct
+      num_incorrectly_placed = num_potentially_correct - num_correct
 
-      (CORRECT * num_correct) + (INCORRECT_PLACEMENT * remaining_potentially_correct)
+      (CORRECT * num_correct) + (INCORRECT_PLACEMENT * num_incorrectly_placed)
 
       #tally up instances of each digit in code
       #tally up instances of each digit in guess
@@ -58,7 +58,7 @@ class Codemaker
 
   private
 
-  def tally_occurrences(str)
+  def self.tally_occurrences(str)
    #binding.pry
     arr = str.chars
     tally = Hash.new(0)

@@ -63,7 +63,7 @@ class Game
   end
 
   def feedback
-    @curr_feedback = @codemaker.feedback(@curr_guess, @code)
+    @curr_feedback = Codemaker::feedback(@curr_guess, @code)
   end
 
   def setup
