@@ -22,8 +22,6 @@ class Codemaker
     else
       code_tally = tally_occurrences(code)
       guess_tally = tally_occurrences(guess)
-      # puts "Code Tally: #{code_tally}"
-      # puts "Guess Tally: #{guess_tally}"
 
       num_potentially_correct = 0
       code_tally.each_key do |digit|
@@ -35,31 +33,18 @@ class Codemaker
           end
         end
       end
-      #puts "Potentially correct: #{num_potentially_correct}"
 
       num_correct = 0
       guess.chars.each_index { |i| num_correct += 1 if guess[i] == code[i] }
       num_incorrectly_placed = num_potentially_correct - num_correct
 
       (CORRECT * num_correct) + (INCORRECT_PLACEMENT * num_incorrectly_placed)
-
-      #tally up instances of each digit in code
-      #tally up instances of each digit in guess
-      #for each digit in guess that is in code
-      #if num in guess < num in code
-      #num potentially correct + num in guess
-      #else
-      #num potentially correct + num in code
-      #for each digit in guess that is correct
-      #num potentially correct - 1
-      #num correct + 1
     end
   end
 
   private
 
   def self.tally_occurrences(str)
-    #binding.pry
     arr = str.chars
     tally = Hash.new(0)
     arr.each { |item| tally[item] += 1 }

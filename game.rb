@@ -14,7 +14,6 @@ class Game
 
     if play_game
       puts "Crack the code in 12 attempts!"
-      @code = @codemaker.create_code
 
       loop do
         puts history_string
@@ -87,6 +86,7 @@ class Game
     else
       return false
     end
+    @code = @codemaker.create_code
     true
   end
 
