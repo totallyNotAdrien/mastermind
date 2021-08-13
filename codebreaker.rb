@@ -2,15 +2,12 @@ require "pry-byebug"
 require_relative "utils.rb"
 
 class Codebreaker
-  attr_reader :human
-
-  CORRECT = "C"
-  INCORRECT_PLACEMENT = "I"
+  include Utils
 
   SAME_CHAR = "S"
   DIFF_CHAR = "D"
 
-  include Utils
+  attr_reader :human
 
   def initialize(human = false)
     @human = human

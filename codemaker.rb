@@ -1,8 +1,8 @@
+require_relative "utils.rb"
 class Codemaker
-  attr_reader :human
+  include Utils
 
-  CORRECT = "C"
-  INCORRECT_PLACEMENT = "I"
+  attr_reader :human
 
   def initialize(human = false)
     @human = human
@@ -38,7 +38,7 @@ class Codemaker
       #puts "Potentially correct: #{num_potentially_correct}"
 
       num_correct = 0
-      guess.chars.each_index {|i| num_correct += 1 if guess[i] == code[i]}
+      guess.chars.each_index { |i| num_correct += 1 if guess[i] == code[i] }
       num_incorrectly_placed = num_potentially_correct - num_correct
 
       (CORRECT * num_correct) + (INCORRECT_PLACEMENT * num_incorrectly_placed)
@@ -46,27 +46,36 @@ class Codemaker
       #tally up instances of each digit in code
       #tally up instances of each digit in guess
       #for each digit in guess that is in code
-        #if num in guess < num in code
-          #num potentially correct + num in guess
-        #else
-          #num potentially correct + num in code
+      #if num in guess < num in code
+      #num potentially correct + num in guess
+      #else
+      #num potentially correct + num in code
       #for each digit in guess that is correct
-        #num potentially correct - 1
-        #num correct + 1
+      #num potentially correct - 1
+      #num correct + 1
     end
   end
 
   private
 
   def self.tally_occurrences(str)
-   #binding.pry
+    #binding.pry
     arr = str.chars
     tally = Hash.new(0)
-    arr.each {|item| tally[item] += 1}
+    arr.each { |item| tally[item] += 1 }
     tally
   end
 
   def human_code
+    print "Enter four digits (1-6) for the computer to guess (ex: '1632'): "
+    input = gets.chomp.strip
+    until (input.length == 4 && all_digits?(input) &&
+           all_chars_between?(input, "1", "6"))
+      puts "Make sure your number consists of 4 digits between 1 and 6"
+      print "Number: "
+      input = gets.chomp.strip
+    end
+    input
   end
 
   def computer_code
