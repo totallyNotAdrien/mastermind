@@ -18,7 +18,7 @@ class Codebreaker
     if human
       human_guess(attempt)
     else
-      guess = computer_guess(attempt, guess_history)
+      guess = computer_guess(guess_history)
       puts "Attempt ##{attempt}: #{guess}"
       guess
     end
@@ -43,7 +43,7 @@ class Codebreaker
 
   #"history" entry format:
   #{ guess: "1234", feedback: "CCII" }
-  def computer_guess(attempt, history)
+  def computer_guess(history)
     prev_history_entry = history.last
     if prev_history_entry
       prev_guess = prev_history_entry[:guess]
@@ -95,7 +95,6 @@ class Codebreaker
   def adjust_guess_index(guess)
     @guess_index = @potential_codes.find_index(guess)
     @potential_codes.delete_at(@guess_index)
-    puts "Codes: #{@potential_codes.length}"
     @guess_index = 0 if @guess_index >= @potential_codes.length
   end
 end
