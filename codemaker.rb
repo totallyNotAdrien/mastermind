@@ -20,19 +20,11 @@ class Codemaker
     if guess == code
       CORRECT * 4
     else
-      code_tally = tally_occurrences(code)
-      guess_tally = tally_occurrences(guess)
+      code_counts = occurrences(code)
+      guess_counts = occurrences(guess)
 
-      num_potentially_correct = 0
-      code_tally.each_key do |digit|
-        if guess_tally[digit] > 0
-          if guess_tally[digit] < code_tally[digit]
-            num_potentially_correct += guess_tally[digit]
-          else
-            num_potentially_correct += code_tally[digit]
-          end
-        end
-      end
+      num_potentially_correct = 
+        num_potentially_correct_digits(guess_counts, code_counts)
 
       num_correct = 0
       guess.chars.each_index { |i| num_correct += 1 if guess[i] == code[i] }
@@ -44,7 +36,7 @@ class Codemaker
 
   private
 
-  def self.tally_occurrences(str)
+  def self.occurrences(str)
     arr = str.chars
     tally = Hash.new(0)
     arr.each { |item| tally[item] += 1 }
@@ -67,5 +59,21 @@ class Codemaker
     code = []
     4.times { code << rand(1..6).to_s }
     code.join("")
+  end
+
+  #guess_counts and code_counts are hashes with entries for
+  #each digit in the code (ex: "2334" = {"2"=>1, "3"=>2, "4"=>1})
+  def self.num_potentially_correct_digits(guess_counts, code_counts)
+    num_potentially_correct = 0
+    code_counts.each_key do |digit|
+      if guess_counts[digit] > 0
+        if guess_counts[digit] < code_counts[digit]
+          num_potentially_correct += guess_counts[digit]
+        else
+          num_potentially_correct += code_counts[digit]
+        end
+      end
+    end
+    num_potentially_correct
   end
 end

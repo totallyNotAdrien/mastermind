@@ -1,26 +1,22 @@
 class Game
-  # track all guesses and feedback
-  # get guess
-  # get guess feedback
-
-  #
   def initialize()
     @history = []
     @attempt = 1
+    @max_attempts = 12
   end
 
   def play
     play_game = setup
 
     if play_game
-      puts "Crack the code in 12 attempts!"
+      puts "Crack the code in #{@max_attempts} attempts!"
 
       loop do
         puts history_string
         breaker_guess
 
         if @curr_guess == "cheat"
-          puts "These digits: " + @code
+          puts "The Code: " + @code
           redo
         elsif @curr_guess == "q"
           puts "Thank you so much for playing my game!"
@@ -33,17 +29,10 @@ class Game
         @attempt += 1
         @history << { guess: @curr_guess, feedback: @curr_feedback }
         break if @curr_feedback == Codemaker::CORRECT * 4 ||
-                 @attempt > 12
+                 @attempt > @max_attempts
       end
-      
-      codebreaker_str = (@codebreaker.human ? "You" : "Computer")
-      if @curr_feedback == Codemaker::CORRECT * 4
-        puts history_string
-        puts "Conglaturation !!!\nYou have cracked a great code."
-      elsif @attempt > 12
-        puts history_string
-        puts codebreaker_str + " failed to crack the code."
-      end
+
+      game_end
     end
   end
 
@@ -67,10 +56,10 @@ class Game
 
   def setup
     print "Select one of the following options:\n" +
-        "\t[1] Crack the computer's code\n" +
-        "\t[2] Have the computer crack your code\n" +
-        "\t[3] Watch the computer crack its own code\n" +
-        "\t[ANY] Quit\n\n"
+            "\t[1] Crack the computer's code\n" +
+            "\t[2] Have the computer crack your code\n" +
+            "\t[3] Watch the computer crack its own code\n" +
+            "\t[ANY] Quit\n\n"
     print "Selection: "
     input = gets.chomp.strip
     case input
@@ -88,6 +77,18 @@ class Game
     end
     @code = @codemaker.create_code
     true
+  end
+
+  def game_end
+    congrat_str = (@codebreaker.human ? "You have" : "Computer has")
+    codebreaker_str = (@codebreaker.human ? "You" : "Computer")
+    if @curr_feedback == Codemaker::CORRECT * 4
+      puts history_string
+      puts "Conglaturation !!!\n#{congrat_str} cracked a great code."
+    elsif @attempt > 12
+      puts history_string
+      puts codebreaker_str + " failed to crack the code."
+    end
   end
 
   attr_reader :codemaker
