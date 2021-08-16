@@ -20,8 +20,8 @@ class Codemaker
     if guess == code
       CORRECT * 4
     else
-      code_counts = occurrences(code)
-      guess_counts = occurrences(guess)
+      code_counts = occurrences_of_char(code)
+      guess_counts = occurrences_of_char(guess)
 
       num_potentially_correct = 
         num_potentially_correct_digits(guess_counts, code_counts)
@@ -36,7 +36,7 @@ class Codemaker
 
   private
 
-  def self.occurrences(str)
+  def self.occurrences_of_char(str)
     arr = str.chars
     tally = Hash.new(0)
     arr.each { |item| tally[item] += 1 }
