@@ -18,6 +18,7 @@ class Codebreaker
       human_guess(attempt)
     else
       guess = computer_guess(guess_history)
+      sleep(1)
       puts "Attempt ##{attempt}: #{guess}"
       guess
     end
