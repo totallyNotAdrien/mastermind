@@ -1,4 +1,3 @@
-require "pry-byebug"
 require_relative "utils.rb"
 
 class Codebreaker
@@ -32,8 +31,8 @@ class Codebreaker
 
     guess = gets.chomp.strip
     until (guess.length == 4 && all_digits?(guess) &&
-           all_chars_between?(guess, "1", "6")) || guess == "q" ||
-          guess == "cheat"
+           all_chars_between?(guess, "1", "6")) || guess.downcase == "q" ||
+          guess.downcase == "cheat"
       puts "Make sure your guess consists of 4 digits between 1 and 6"
       guess = gets.chomp.strip
     end

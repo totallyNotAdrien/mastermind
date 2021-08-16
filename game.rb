@@ -15,10 +15,10 @@ class Game
         puts history_string
         breaker_guess
 
-        if @curr_guess == "cheat"
+        if @curr_guess.downcase == "cheat"
           puts "The Code: " + @code
           redo
-        elsif @curr_guess == "q"
+        elsif @curr_guess.downcase == "q"
           puts "Thank you so much for playing my game!"
           @curr_feedback = ""
           break
